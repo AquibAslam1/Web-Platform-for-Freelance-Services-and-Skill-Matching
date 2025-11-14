@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Favorites | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-16 px-6 flex flex-col items-center relative overflow-hidden">
+
+  <!-- Bubbles -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="text-center mb-8 relative z-10">
+    <h2 class="text-4xl font-extrabold text-indigo-700">Favorite Jobs</h2>
+    <p class="text-gray-500 mt-2 text-base font-light">💜 Your saved jobs for quick access</p>
+  </div>
+
+  <!-- Favorite Jobs List -->
+  <div id="favList" class="space-y-6 relative z-10 w-full max-w-4xl">
+    <!-- JS will populate jobs here -->
+  </div>
+</div>
+
+<!-- Bubble and animation styles -->
+<style>
+  .bubble {
+    position: absolute;
+    bottom: -150px;
+    background: rgba(99, 102, 241, 0.25);
+    border-radius: 50%;
+    animation: rise linear infinite;
+  }
+
+  .bubble:nth-child(1) { left: 10%; width: 40px; height: 40px; animation-duration: 18s; }
+  .bubble:nth-child(2) { left: 20%; width: 25px; height: 25px; animation-duration: 12s; animation-delay: 2s; }
+  .bubble:nth-child(3) { left: 35%; width: 60px; height: 60px; animation-duration: 25s; animation-delay: 4s; }
+  .bubble:nth-child(4) { left: 50%; width: 20px; height: 20px; animation-duration: 10s; animation-delay: 6s; }
+  .bubble:nth-child(5) { left: 65%; width: 45px; height: 45px; animation-duration: 14s; animation-delay: 3s; }
+  .bubble:nth-child(6) { left: 75%; width: 30px; height: 30px; animation-duration: 16s; animation-delay: 5s; }
+  .bubble:nth-child(7) { left: 85%; width: 55px; height: 55px; animation-duration: 22s; animation-delay: 1s; }
+  .bubble:nth-child(8) { left: 95%; width: 35px; height: 35px; animation-duration: 15s; animation-delay: 7s; }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.7; }
+    50% { opacity: 0.4; }
+    100% { transform: translateY(-120vh) scale(1.3); opacity: 0; }
+  }
+</style>
+
+<script>
+async function loadFavs(){
+  const token = localStorage.getItem('access');
+  const res = await fetch('/api/jobs/favorites/', { headers: { Authorization: `Bearer ${token}` }});
+  const data = await res.json();
+  const container = document.getElementById('favList');
+  container.innerHTML = '';
+
+  if (!Array.isArray(data) || data.length === 0) {
+    container.innerHTML = '<p class="text-gray-600">No favorite jobs yet.</p>';
+    return;
+  }
+
+  data.forEach(f => {
+    const job = f.job;
+    const el = document.createElement('div');
+    el.className = 'p-3 bg-white rounded mb-2 shadow';
+    el.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <strong>${job.title}</strong> — ${job.tech_stack || ''}
+        </div>
+        <div>
+          <a class="text-indigo-600 underline" href="/job_detail/?id=${job.id}">View</a>
+        </div>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+document.addEventListener('DOMContentLoaded', loadFavs);
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+### 1. Register a new user
+POST http://127.0.0.1:8000/api/auth/register/
+Content-Type: application/json
+
+{
+  "username": "samar23",
+  "email": "sam@mail.com",
+  "password": "Pass12345",
+  "role": "freelancer"
+}
+
+### 2. Login to get JWT Token
+POST http://127.0.0.1:8000/api/auth/login/
+Content-Type: application/json
+
+{
+  "username": "sam",
+  "password": "Pass12345"
+}
+
+### 3. Get current logged in user (copy token from login response below)
+GET http://127.0.0.1:8000/api/me/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU1NjkwMzEyLCJpYXQiOjE3NTU2ODg1MTIsImp0aSI6IjYyM2Q1NzNkZjQwOTRiOTRhMDcwZmM1MTEwOTVmMzA1IiwidXNlcl9pZCI6IjIifQ.cRT8exglU7_ChyU2E4TWPN5apWaRJKOsybkMSi9pF5U
+
+### 4. Update freelancer profile
+PUT http://127.0.0.1:8000/api/freelancer/profile/
+Content-Type: application/json
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+{
+  "headline": "Full-stack dev",
+  "summary": "I build React + Django apps.",
+  "years_experience": 2,
+  "hourly_rate_expectation": 20,
+  "education": "BSc CS",
+  "experience": "Intern at X",
+  "tech_stack": "React, Django, PostgreSQL",
+  "skills": "React, Django, REST"
+}

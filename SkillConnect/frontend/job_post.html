@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Post Job | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-16 px-4">
+
+  <!-- Card -->
+  <div class="max-w-3xl w-full bg-white rounded-3xl shadow-2xl p-10 transform hover:scale-105 transition duration-300">
+    <h2 class="text-3xl font-extrabold mb-6 text-center text-indigo-700">🚀 Post a New Job</h2>
+
+    <form id="jobPostForm" enctype="multipart/form-data" class="space-y-5">
+      
+      <div>
+        <label class="block font-semibold mb-1">Title</label>
+        <div class="relative">
+          <span class="absolute left-3 top-3 text-gray-400">📝</span>
+          <input name="title" required class="w-full pl-10 p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="Enter job title">
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Description</label>
+        <div class="relative">
+          <span class="absolute left-3 top-3 text-gray-400">📄</span>
+          <textarea name="description" required class="w-full pl-10 p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" rows="5" placeholder="Describe the job..."></textarea>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Tech Stack</label>
+        <div class="relative">
+          <span class="absolute left-3 top-3 text-gray-400">💻</span>
+          <input name="tech_stack" class="w-full pl-10 p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="e.g., Django, React">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">Pay per hour</label>
+          <div class="relative">
+            <span class="absolute left-3 top-3 text-gray-400">💰</span>
+            <input name="pay_per_hour" type="number" step="0.01" class="w-full pl-10 p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="Hourly pay">
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Experience level</label>
+          <div class="relative">
+            <span class="absolute left-3 top-3 text-gray-400">📈</span>
+            <input name="experience_level" class="w-full pl-10 p-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="e.g., Junior, Senior">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Image</label>
+        <input name="image" type="file" class="w-full p-3 border rounded-xl shadow-sm">
+      </div>
+
+      <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-5 py-3 rounded-xl shadow-lg font-semibold hover:from-indigo-600 hover:to-purple-600 transition transform hover:-translate-y-1">
+        🚀 Post Job
+      </button>
+    </form>
+
+    <p id="message" class="mt-4 text-center font-medium text-lg"></p>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('jobPostForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  const token = localStorage.getItem('access');
+  document.getElementById('message').innerText = 'Submitting...';
+  try {
+    const res = await fetch('/api/jobs/', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: data
+    });
+    if (res.ok) {
+      document.getElementById('message').innerText = '✅ Job posted!';
+      form.reset();
+    } else {
+      const j = await res.json().catch(()=>({detail:'Unknown error'}));
+      document.getElementById('message').innerText = '❌ ' + (j.detail || JSON.stringify(j));
+    }
+  } catch (err) {
+    document.getElementById('message').innerText = '❌ Network error';
+  }
+});
+</script>
+{% endblock %}

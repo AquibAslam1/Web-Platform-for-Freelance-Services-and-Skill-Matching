@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="relative bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center py-28 px-6 overflow-hidden">
+
+  <!-- Floating Bubbles -->
+  <div id="bubble-container" class="absolute inset-0 overflow-hidden z-0"></div>
+
+  <!-- RGB Border Wrapper -->
+  <div class="relative p-[3px] rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient-x shadow-2xl w-full max-w-xl z-10">
+    
+    <!-- Inner Form Container -->
+    <div class="bg-white rounded-3xl p-8">
+      
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h2 class="text-3xl font-extrabold text-indigo-700">Edit Your Profile ✨</h2>
+        <p class="text-gray-500 mt-2">Update your details and showcase your best self</p>
+      </div>
+
+      <!-- Edit Profile Form -->
+      <form id="editProfileForm" enctype="multipart/form-data" class="space-y-6">
+        <!-- Common fields (for freelancers only) -->
+        <div id="commonFields" class="space-y-4">
+          <div>
+            <label class="block font-medium text-gray-700">💡 Headline</label>
+            <input type="text" name="headline"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">📝 Summary</label>
+            <textarea name="summary"
+                      class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Role-specific fields -->
+        <div id="roleFields" class="space-y-4"></div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+                class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-xl shadow-lg hover:from-blue-600 hover:to-indigo-700 transition text-lg font-semibold">
+          Save Changes
+        </button>
+      </form>
+
+      <!-- Toast -->
+      <div id="toast" class="hidden fixed bottom-6 right-6 bg-white shadow-lg border border-gray-200 px-6 py-3 rounded-xl text-gray-700 font-medium"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Animations -->
+<style>
+  /* Bubble animation */
+  .bubble {
+    position: absolute;
+    bottom: -100px;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: rise linear infinite;
+  }
+
+  @keyframes rise {
+    0%   { transform: translateY(0) scale(1); opacity: 0.5; }
+    50%  { opacity: 0.8; }
+    100% { transform: translateY(-110vh) scale(1.2); opacity: 0; }
+  }
+
+  /* RGB gradient border */
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 6s ease infinite;
+  }
+</style>
+
+<script>
+  // Generate floating bubbles dynamically
+  function createBubbles() {
+    const container = document.getElementById("bubble-container");
+    for (let i = 0; i < 15; i++) {
+      const bubble = document.createElement("span");
+      const size = Math.random() * 60 + 20; // 20px - 80px
+      bubble.classList.add("bubble");
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      bubble.style.left = `${Math.random() * 100}%`;
+      bubble.style.background = `rgba(${100 + Math.random()*100}, ${100 + Math.random()*100}, 255, 0.3)`;
+      bubble.style.animationDuration = `${10 + Math.random() * 15}s`;
+      bubble.style.animationDelay = `${Math.random() * 10}s`;
+      container.appendChild(bubble);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    createBubbles();
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      window.location.href = "/login/";
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/me/", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await response.json();
+      const role = data.role;
+      const roleFields = document.getElementById("roleFields");
+
+      // ---------------- Freelancer ----------------
+      if (role === "freelancer") {
+        document.getElementById("commonFields").style.display = "block";
+
+        document.querySelector("[name='headline']").value = data.profile?.headline || "";
+        document.querySelector("[name='summary']").value = data.profile?.summary || "";
+
+        roleFields.innerHTML = `
+          <div>
+            <label class="block font-medium text-gray-700">🎓 Education</label>
+            <input type="text" name="education"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">⏳ Years of Experience</label>
+            <input type="number" name="years_of_experience" min="0"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">⚙️ Tech Stack</label>
+            <input type="text" name="tech_stack"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">💼 Skills</label>
+            <input type="text" name="skills"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">🎂 Date of Birth</label>
+            <input type="date" name="dob"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">📄 Upload Resume</label>
+            <input type="file" name="resume" accept=".pdf,.doc,.docx"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+        `;
+
+        setTimeout(() => {
+          document.querySelector("[name='education']").value = data.profile?.education || "";
+          document.querySelector("[name='years_of_experience']").value = data.profile?.years_of_experience ?? "";
+          document.querySelector("[name='tech_stack']").value = data.profile?.tech_stack || "";
+          document.querySelector("[name='skills']").value = data.profile?.skills || "";
+          document.querySelector("[name='dob']").value = data.profile?.dob ?? "";
+        }, 50);
+
+      // ---------------- Recruiter ----------------
+      } else if (role === "recruiter") {
+        document.getElementById("commonFields").style.display = "none";
+
+        roleFields.innerHTML = `
+          <div>
+            <label class="block font-medium text-gray-700">🏢 Company Name</label>
+            <input type="text" name="company_name"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">🌐 Company Website</label>
+            <input type="url" name="website"
+                   class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-medium text-gray-700">📖 Company Description</label>
+            <textarea name="about"
+                      class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"></textarea>
+          </div>
+        `;
+
+        setTimeout(() => {
+          document.querySelector("[name='company_name']").value = data.profile?.company_name || "";
+          document.querySelector("[name='website']").value = data.profile?.website || "";
+          document.querySelector("[name='about']").value = data.profile?.about || "";
+        }, 50);
+      }
+
+      // ---------------- Submit ----------------
+      document.getElementById("editProfileForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        let endpoint = role === "freelancer"
+          ? "/api/freelancer/profile/"
+          : "/api/recruiter/profile/";
+
+        const res = await fetch(endpoint, {
+          method: "PUT",
+          headers: { "Authorization": `Bearer ${token}` },
+          body: formData
+        });
+
+        const toast = document.getElementById("toast");
+
+        if (res.ok) {
+          toast.innerText = "✅ Profile updated successfully!";
+          toast.classList.remove("hidden");
+          setTimeout(() => toast.classList.add("hidden"), 3000);
+          window.location.href = "/profile/";
+        } else {
+          const err = await res.json();
+          toast.innerText = "❌ Failed: " + JSON.stringify(err);
+          toast.classList.remove("hidden");
+          setTimeout(() => toast.classList.add("hidden"), 4000);
+        }
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert("⚠️ Error loading profile");
+    }
+  });
+</script>
+{% endblock %}

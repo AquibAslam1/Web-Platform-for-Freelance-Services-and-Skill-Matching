@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notifications | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-16 px-6 flex flex-col items-center relative overflow-hidden">
+
+  <!-- Header -->
+  <div class="text-center mb-8 relative z-10">
+    <h2 class="text-4xl font-extrabold text-indigo-700">Notifications</h2>
+    <p class="text-gray-500 mt-2 text-base font-light">🔔 Keep track of your latest updates</p>
+  </div>
+
+  <!-- Notifications List -->
+  <div id="notifs" class="space-y-6 w-full max-w-4xl relative z-10">
+    <!-- JS will populate notifications here -->
+  </div>
+</div>
+
+<script>
+async function loadNotifications(){
+  const token = localStorage.getItem('access');
+  const res = await fetch('/api/jobs/notifications/', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  const list = document.getElementById('notifs');
+  list.innerHTML = '';
+
+  if (!Array.isArray(data) || data.length === 0) {
+    list.innerHTML = '<p class="text-gray-600">No notifications yet.</p>';
+    return;
+  }
+
+  data.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'p-3 border rounded mb-2 flex justify-between items-center ' +
+                   (n.read ? 'bg-gray-100' : 'bg-yellow-50');
+    el.innerHTML = `
+      <span>${n.message} <em class="text-sm text-gray-500">(${new Date(n.created_at).toLocaleString()})</em></span>
+      ${!n.read ? `<button onclick="markRead(${n.id})" class="px-3 py-1 bg-indigo-600 text-white rounded">Mark as read</button>` : ''}
+    `;
+    list.appendChild(el);
+  });
+}
+
+async function markRead(id){
+  const token = localStorage.getItem('access');
+  const res = await fetch(`/api/jobs/notifications/${id}/read/`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (res.ok) {
+    // Also refresh navbar badge if present
+    if (typeof refreshUnreadBadge === 'function') refreshUnreadBadge();
+    loadNotifications();
+  } else {
+    alert('Error marking notification as read');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadNotifications);
+</script>
+{% endblock %}

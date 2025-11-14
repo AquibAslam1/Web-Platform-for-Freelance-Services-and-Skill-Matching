@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Home | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="py-20 px-6 relative z-10">
+
+  <!-- Hero Section -->
+  <div class="grid md:grid-cols-2 gap-12 items-center px-6 md:px-16">
+
+    <!-- Left Content -->
+    <div class="space-y-6 text-left flex flex-col items-start">
+      <h1 class="text-5xl font-extrabold text-indigo-700 leading-tight">
+        Welcome to <span class="text-blue-600">SkillConnect</span>
+      </h1>
+      <p class="text-lg text-gray-700 max-w-xl">
+        SkillConnect bridges the gap between 
+        <span class="font-semibold text-indigo-600">freelancers</span> and 
+        <span class="font-semibold text-blue-600">recruiters</span>.  
+        Showcase your talent, find opportunities, and grow your career effortlessly.
+      </p>
+      <div class="flex gap-4">
+        <a href="{% url 'register' %}" 
+           class="relative inline-flex items-center justify-center px-6 py-3 overflow-hidden font-medium text-white bg-indigo-600 rounded-xl shadow-lg group">
+          <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-indigo-400 rounded-full group-hover:w-56 group-hover:h-56"></span>
+          <span class="relative">Get Started</span>
+        </a>
+        <a href="{% url 'login' %}" 
+           class="relative inline-flex items-center justify-center px-6 py-3 overflow-hidden font-medium text-indigo-600 bg-white border-2 border-indigo-600 rounded-xl shadow-lg group">
+          <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-indigo-100 rounded-full group-hover:w-56 group-hover:h-56"></span>
+          <span class="relative">Login</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Image -->
+    <div class="flex justify-center">
+      <img src="https://onlineparttime.com/wp-content/uploads/2021/06/Freelance-Job-Categories.png"
+           alt="SkillConnect Illustration"
+           class="rounded-2xl shadow-lg w-full max-w-md">
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="max-w-6xl mx-auto mt-24">
+    <h2 class="text-3xl font-bold text-center text-indigo-700 mb-12">
+      Why Choose SkillConnect?
+    </h2>
+    <div class="grid md:grid-cols-3 gap-10 text-center">
+
+      <!-- Card 1 -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition">
+        <img src="https://cdn.wizard.com.br/wp-content/uploads/2020/01/22074424/networking1.jpg" 
+             alt="Networking"
+             class="w-48 h-50 mx-auto mb-6 object-cover rounded-xl">
+        <h3 class="text-xl font-semibold text-indigo-700">Connect & Network</h3>
+        <p class="text-gray-600 mt-3">
+          Build valuable connections with recruiters and freelancers from diverse industries.
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition">
+        <img src="https://st2.depositphotos.com/4169661/9944/i/450/depositphotos_99441514-stock-photo-man-hand-writing-opportunity-with.jpg" 
+             alt="Opportunities"
+             class="w-48 h-50 mx-auto mb-6 object-cover rounded-xl">
+        <h3 class="text-xl font-semibold text-indigo-700">Find Opportunities</h3>
+        <p class="text-gray-600 mt-3">
+          Discover freelance projects or full-time roles that match your unique skill set.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition">
+        <img src="https://img.freepik.com/free-photo/future-visions-business-technology-concept_23-2151893441.jpg?semt=ais_hybrid&w=740&q=80" 
+             alt="Growth"
+             class="w-48 h-50 mx-auto mb-6 object-cover rounded-xl">
+        <h3 class="text-xl font-semibold text-indigo-700">Showcase Skills</h3>
+        <p class="text-gray-600 mt-3">
+          Highlight your portfolio, experience, and expertise to attract the right opportunities.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

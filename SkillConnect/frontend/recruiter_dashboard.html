@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Recruiter Dashboard | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+  <h2 class="text-2xl font-bold mb-4">Your Jobs</h2>
+  <div id="jobsList"></div>
+</div>
+
+<script>
+async function loadMyJobs() {
+  const token = localStorage.getItem('access');
+  if (!token) return;
+
+  try {
+    const res = await fetch('/api/jobs/recruiter/my-jobs/', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const list = document.getElementById('jobsList');
+    list.innerHTML = '';
+
+    if (!Array.isArray(data) || data.length === 0) {
+      list.innerHTML = '<p class="text-gray-600">You haven\'t posted any jobs yet.</p>';
+      return;
+    }
+
+    data.forEach(job => {
+      const card = document.createElement('div');
+      card.className = 'flex gap-4 p-4 bg-white rounded shadow mb-3';
+
+      const imgHtml = job.image ? 
+        `<img src="${job.image}" alt="${job.title}" class="w-24 h-20 object-cover rounded">` : 
+        `<div class="w-24 h-20 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-sm">No Image</div>`;
+
+      card.innerHTML = `
+        ${imgHtml}
+        <div class="flex-1">
+          <h4 class="text-lg font-semibold">${job.title || 'Untitled Job'}</h4>
+          <p class="text-sm text-gray-600">${job.tech_stack || ''}</p>
+          ${job.pay_per_hour ? `<p class="text-sm">💰 $${job.pay_per_hour}/hour</p>` : ''}
+          ${job.experience_level ? `<p class="text-sm">📈 Level: ${job.experience_level}</p>` : ''}
+          <button onclick="viewApplicants(${job.id})" class="mt-2 px-3 py-1 bg-indigo-600 text-white rounded">View Applicants</button>
+          <div id="app-${job.id}" class="mt-2"></div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    alert('Failed to load jobs.');
+  }
+}
+
+async function viewApplicants(jobId) {
+  const token = localStorage.getItem('access');
+  if (!token) return;
+
+  try {
+    const res = await fetch(`/api/jobs/${jobId}/applicants/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      alert('Failed to load applicants');
+      return;
+    }
+
+    const apps = await res.json();
+    const container = document.getElementById(`app-${jobId}`);
+    container.innerHTML = '';
+
+    if (!Array.isArray(apps) || apps.length === 0) {
+      container.innerHTML = '<p class="text-gray-600">No applicants yet.</p>';
+      return;
+    }
+
+    apps.forEach(a => {
+      const el = document.createElement('div');
+      el.className = 'mt-3 p-4 border rounded bg-gray-50';
+      el.innerHTML = `
+        <h3 class="font-bold text-lg">${a.freelancer || 'Unknown'}</h3>
+        <p><strong>💡 Headline:</strong> ${a.profile?.headline || '—'}</p>
+        <p><strong>📝 Summary:</strong> ${a.profile?.summary || '—'}</p>
+        <p><strong>🎓 Education:</strong> ${a.profile?.education || '—'}</p>
+        <p><strong>⏳ Experience:</strong> ${a.profile?.experience || '—'} years</p>
+        <p><strong>⚙️ Tech Stack:</strong> ${a.profile?.tech_stack || '—'}</p>
+        <p><strong>🛠 Skills:</strong> ${a.profile?.skills || '—'}</p>
+        <p><strong>🎂 DOB:</strong> ${a.profile?.dob || '—'}</p>
+        ${a.profile?.resume ? `<p><strong>📄 Resume:</strong> <a href="${a.profile.resume}" target="_blank" class="text-indigo-600 underline">View</a></p>` : '<p><strong>📄 Resume:</strong> —</p>'}
+        <p class="mt-2"><strong>Cover Letter:</strong> ${a.cover_letter || '—'}</p>
+
+        <div class="mt-2 flex items-center">
+          <select id="status-${a.id}" class="border rounded px-2 py-1">
+            <option value="applied" ${a.status=='applied'?'selected':''}>Applied</option>
+            <option value="shortlisted" ${a.status=='shortlisted'?'selected':''}>Shortlisted</option>
+            <option value="interview" ${a.status=='interview'?'selected':''}>Interview</option>
+            <option value="hired" ${a.status=='hired'?'selected':''}>Hired</option>
+            <option value="rejected" ${a.status=='rejected'?'selected':''}>Rejected</option>
+          </select>
+          <button onclick="updateStatus(${a.id})" class="ml-2 px-3 py-1 bg-green-500 text-white rounded">Update</button>
+        </div>
+      `;
+      container.appendChild(el);
+    });
+  } catch (err) {
+    console.error(err);
+    alert('Error loading applicants.');
+  }
+}
+
+async function updateStatus(appId) {
+  const token = localStorage.getItem('access');
+  const sel = document.getElementById(`status-${appId}`);
+  if (!sel) { alert('Status control missing'); return; }
+  const status = sel.value;
+
+  try {
+    const res = await fetch(`/api/jobs/applications/${appId}/update/`, {
+      method: 'PUT',
+      headers: { 
+        'Authorization': `Bearer ${token}`, 
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify({ status })
+    });
+
+    if (res.ok) {
+      alert('✅ Status updated');
+      // refresh applicants list
+      const appNode = sel.closest('[id^="app-"]');
+      if (appNode) {
+        const jobId = appNode.id.split('-')[1];
+        viewApplicants(jobId);
+      }
+    } else {
+      let j = { detail: 'Unknown error' };
+      try { j = await res.json(); } catch(e){ /* ignore */ }
+      alert('Error: ' + (j.detail || JSON.stringify(j)));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Failed to update status.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadMyJobs);
+</script>
+{% endblock %}

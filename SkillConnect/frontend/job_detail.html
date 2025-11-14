@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Job Detail | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6" id="jobWrap">
+  <!-- Job Details -->
+  <div id="jobBox" class="bg-white rounded-xl shadow p-6 text-center">
+    <p class="text-gray-500">Loading job details...</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="mt-4 flex gap-2 justify-center">
+    <button id="applyBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Apply</button>
+    <button id="favBtn" class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 transition">❤ Favorite</button>
+  </div>
+</div>
+
+<script>
+function getJobIdFromPath() {
+    // Extract job ID from URL path: /jobs/4/
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    return pathParts[pathParts.length - 1];
+}
+
+async function loadJob() {
+    const id = getJobIdFromPath();
+    const jobBox = document.getElementById('jobBox');
+
+    if (!id) { 
+        jobBox.innerHTML = '<p class="text-red-600">Invalid job id.</p>'; 
+        return; 
+    }
+
+    const token = localStorage.getItem('access');
+    const res = await fetch(`/api/jobs/detail/${id}/`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+        jobBox.innerHTML = '<p class="text-red-600">Failed to load job details.</p>';
+        return;
+    }
+
+    const job = await res.json();
+
+    jobBox.innerHTML = `
+        ${job.image ? `<img src="${job.image}" class="w-full h-60 object-cover rounded-lg mb-4">` : ''}
+        <h2 class="text-2xl font-bold">${job.title}</h2>
+        <p class="text-sm text-gray-500 mt-1">By ${job.recruiter || 'Recruiter'}</p>
+        <p class="mt-3 text-gray-700 whitespace-pre-line">${job.description || ''}</p>
+        <div class="mt-4 text-sm space-y-1">
+            ${job.tech_stack ? `<p><span class="font-semibold">Tech Stack:</span> ${job.tech_stack}</p>` : ''}
+            ${job.pay_per_hour ? `<p><span class="font-semibold">Pay/hour:</span> $${job.pay_per_hour}</p>` : ''}
+            ${job.experience_level ? `<p><span class="font-semibold">Level:</span> ${job.experience_level}</p>` : ''}
+        </div>
+    `;
+}
+
+async function applyJob() {
+    const id = getJobIdFromPath();
+    const token = localStorage.getItem('access');
+
+    const cover = prompt('Write a short cover letter (optional):') || '';
+    if (!token) {
+        alert('❌ You need to be logged in to apply.');
+        return;
+    }
+
+    const res = await fetch(`/api/jobs/${id}/apply/`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cover_letter: cover })
+    });
+
+    if (res.ok) {
+        alert('✅ Applied successfully!');
+    } else {
+        const j = await res.json().catch(() => ({ detail: 'Unknown error' }));
+        alert('❌ Error: ' + (j.detail || JSON.stringify(j)));
+    }
+}
+
+async function toggleFavorite() {
+    const id = getJobIdFromPath();
+    const token = localStorage.getItem('access');
+
+    if (!token) {
+        alert('❌ You need to be logged in to favorite this job.');
+        return;
+    }
+
+    const res = await fetch(`/api/jobs/${id}/favorite/`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const j = await res.json().catch(() => ({ detail: 'Done' }));
+    alert(j.detail || 'Done');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadJob();
+    document.getElementById('applyBtn').onclick = applyJob;
+    document.getElementById('favBtn').onclick = toggleFavorite;
+});
+</script>
+
+{% endblock %}

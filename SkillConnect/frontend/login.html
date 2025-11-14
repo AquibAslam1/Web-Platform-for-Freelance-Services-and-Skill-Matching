@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-20 px-6 flex items-center justify-center relative overflow-hidden">
+
+  <!-- Animated Bubbles Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <!-- Form with RGB Glow -->
+  <div class="relative z-10">
+    <div class="relative p-[3px] rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 animate-borderGlow">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md relative z-10"> <!-- reduced p-12 → p-8 -->
+        
+        <!-- Header -->
+        <div class="text-center mb-8"> <!-- reduced mb-10 → mb-8 -->
+          <h2 class="text-3xl font-extrabold text-indigo-700 tracking-tight">Welcome Back 👋</h2> <!-- text-4xl → text-3xl -->
+          <p class="text-gray-500 mt-2 text-sm">
+            Log in to continue your journey with 
+            <span class="font-semibold text-indigo-600">SkillConnect</span>
+          </p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4"> <!-- space-y-6 → space-y-4 -->
+          <!-- Username -->
+          <div>
+            <label for="loginUsername" class="block text-gray-700 font-medium">👤 Username</label>
+            <input type="text" id="loginUsername" name="username" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition">
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="loginPassword" class="block text-gray-700 font-medium">🔒 Password</label>
+            <input type="password" id="loginPassword" name="password" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition">
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit"
+                  class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-2.5 rounded-xl shadow-lg hover:from-indigo-700 hover:to-indigo-800 transition text-base font-semibold">
+            🚀 Login
+          </button>
+        </form>
+
+        <!-- Login Message -->
+        <p id="loginMessage" class="text-center text-xs text-gray-600 mt-4"></p>
+
+        <!-- Register Redirect -->
+        <p class="text-center mt-6 text-gray-700 text-sm">
+          Don’t have an account?
+          <a href="{% url 'register' %}" class="text-indigo-600 font-semibold hover:underline">Register here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bubble & Glow Styles -->
+<style>
+  .bubble {
+    position: absolute;
+    bottom: -100px;
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 50%;
+    animation: rise 18s infinite ease-in;
+  }
+  .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 20s; }
+  .bubble:nth-child(2) { width: 100px; height: 100px; left: 30%; animation-duration: 25s; }
+  .bubble:nth-child(3) { width: 60px; height: 60px; left: 50%; animation-duration: 22s; }
+  .bubble:nth-child(4) { width: 90px; height: 90px; left: 70%; animation-duration: 28s; }
+  .bubble:nth-child(5) { width: 50px; height: 50px; left: 85%; animation-duration: 26s; }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { opacity: 0.7; }
+    100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+  }
+
+  @keyframes borderGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .animate-borderGlow {
+    background-size: 300% 300%;
+    animation: borderGlow 8s ease infinite;
+  }
+</style>
+
+<!-- Attach JS -->
+<script src="{% static 'app.js' %}"></script>
+{% endblock %}

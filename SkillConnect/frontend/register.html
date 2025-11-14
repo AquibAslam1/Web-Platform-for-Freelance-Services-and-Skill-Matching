@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register | SkillConnect{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-20 px-6 flex items-center justify-center relative overflow-hidden">
+
+  <!-- Animated Bubbles Background -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <!-- Form Container with RGB Glow -->
+  <div class="relative z-10">
+    <div class="relative p-[3px] rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 animate-borderGlow">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md relative z-10"> <!-- reduced p-12 → p-8 -->
+        <!-- Header -->
+        <div class="text-center mb-8"> <!-- reduced mb-10 → mb-8 -->
+          <h2 class="text-3xl font-extrabold text-indigo-700 tracking-tight">Join SkillConnect ✨</h2> <!-- reduced text-4xl → text-3xl -->
+          <p class="text-gray-500 mt-2 text-sm">Create your account and start your journey today</p>
+        </div>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="space-y-4"> <!-- reduced space-y-6 → space-y-4 -->
+          <!-- Username -->
+          <div>
+            <label for="username" class="block text-gray-700 font-medium">👤 Username</label>
+            <input type="text" id="username" name="username" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition"> <!-- reduced padding -->
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-gray-700 font-medium">📧 Email</label>
+            <input type="email" id="email" name="email" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition">
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-gray-700 font-medium">🔒 Password</label>
+            <input type="password" id="password" name="password" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition">
+          </div>
+
+          <!-- Role -->
+          <div>
+            <label for="role" class="block text-gray-700 font-medium">🎭 Choose Role</label>
+            <select id="role" name="role" required
+                    class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition">
+              <option value="freelancer">Freelancer</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit"
+                  class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-2.5 rounded-xl shadow-lg hover:from-indigo-700 hover:to-indigo-800 transition text-base font-semibold">
+            🚀 Register
+          </button>
+        </form>
+
+        <!-- Message -->
+        <p id="message" class="text-center text-xs text-gray-600 mt-4"></p>
+
+        <!-- Redirect -->
+        <p class="text-center mt-6 text-gray-700 text-sm">
+          Already have an account?
+          <a href="{% url 'login' %}" class="text-indigo-600 font-semibold hover:underline">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bubble Styles -->
+<style>
+  .bubble {
+    position: absolute;
+    bottom: -100px;
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 50%;
+    animation: rise 18s infinite ease-in;
+  }
+  .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 20s; }
+  .bubble:nth-child(2) { width: 100px; height: 100px; left: 30%; animation-duration: 25s; }
+  .bubble:nth-child(3) { width: 60px; height: 60px; left: 50%; animation-duration: 22s; }
+  .bubble:nth-child(4) { width: 90px; height: 90px; left: 70%; animation-duration: 28s; }
+  .bubble:nth-child(5) { width: 50px; height: 50px; left: 85%; animation-duration: 26s; }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { opacity: 0.7; }
+    100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+  }
+
+  /* RGB glowing border animation */
+  @keyframes borderGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .animate-borderGlow {
+    background-size: 300% 300%;
+    animation: borderGlow 8s ease infinite;
+  }
+</style>
+
+<!-- Load your JavaScript -->
+<script src="{% static 'app.js' %}"></script>
+{% endblock %}
