@@ -63,13 +63,6 @@ Each user gets a personalized dashboard with:
 
 ---
 
-## 📌 Project Status
-✔ Core features implemented  
-✔ AI features integrated  
-🚧 Upcoming enhancements planned  
-
----
-
 ## 🤝 Contributing
 Pull requests are welcome!  
 If you want to contribute, feel free to fork the repository and submit a PR.
