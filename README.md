@@ -41,23 +41,12 @@ Recruiters can update application status as:
 Each user gets a personalized dashboard with:  
 📊 Charts • 📈 Application Insights • 🧾 Job Statistics
 
-### 🔹 Two-Way Ratings & Reviews
-After a job is accepted, both recruiter and freelancer can **rate and review** each other.
 
 ### 🔹 Notifications System
 ⚡ Recruiters get alerts for new applications  
 ⚡ Freelancers are notified about matching jobs  
 
-### 🔹 Public Showcase
-🏆 Top-rated freelancers  
-💬 Testimonials  
-Displayed dynamically on the homepage
 
-### 🤖 AI-Powered Features
-- **Google Gemini AI Chatbot** for assistance  
-- **AI Resume Analyzer** to match applicant resumes with job descriptions  
-
----
 
 ## 🛠 Technology Stack
 
